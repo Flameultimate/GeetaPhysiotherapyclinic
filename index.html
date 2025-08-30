@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 8px 15px rgba(0,0,0,0.2);
+      width: 95%;
+      max-width: 500px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #388e3c;
+    }
+    .appointments {
+      margin-top: 20px;
+    }
+    .appointment {
+      background: #f1f1f1;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border-left: 5px solid #4caf50;
+    }
+    .appointment strong {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📅 Book an Appointment</h1>
+    <form id="appointmentForm">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="tel" id="phone" placeholder="Phone Number" required>
+      <input type="time" id="time" required>
+      <button type="submit">Submit</button>
+    </form>
+
+    <h2>Upcoming Appointments</h2>
+    <div class="appointments" id="appointmentsList">
+      <p>No appointments yet. Be the first!</p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("appointmentForm");
+    const list = document.getElementById("appointmentsList");
+
+    // Load saved appointments
+    let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+
+    function renderAppointments() {
+      list.innerHTML = "";
+      if (appointments.length === 0) {
+        list.innerHTML = "<p>No appointments yet. Be the first!</p>";
+        return;
+      }
+      appointments.forEach((appt, index) => {
+        const div = document.createElement("div");
+        div.className = "appointment";
+        div.innerHTML = `
+          <strong>${appt.name}</strong> 📞 ${appt.phone} <br>
+          ⏰ Preferred Time: <strong>${appt.time}</strong>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const time = document.getElementById("time").value;
+
+      appointments.push({ name, phone, time });
+      localStorage.setItem("appointments", JSON.stringify(appointments));
+
+      renderAppointments();
+      form.reset();
+    });
+
+    // Initial render
+    renderAppointments();
+  </script>
+</body>
+</html>
