@@ -1,0 +1,63 @@
+<script>
+  // Function to get today's date in YYYY-MM-DD format
+  function getToday() {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  }
+
+  // Load appointments from localStorage
+  let savedData = JSON.parse(localStorage.getItem("appointmentsData")) || {};
+  const today = getToday();
+
+  // If saved data is not for today, reset it
+  if (!savedData.date || savedData.date !== today) {
+    savedData = { date: today, appointments: [] };
+    localStorage.setItem("appointmentsData", JSON.stringify(savedData));
+  }
+
+  // Function to render the appointment list
+  function renderAppointments() {
+    const list = document.getElementById("appointmentList");
+    list.innerHTML = ""; // clear old list
+
+    if (savedData.appointments.length === 0) {
+      list.innerHTML = "<li>No appointments yet today</li>";
+      return;
+    }
+
+    savedData.appointments.forEach(app => {
+      const li = document.createElement("li");
+      li.textContent = `${app.name} - ${app.time}`;
+      list.appendChild(li);
+    });
+  }
+
+  // Function to add a new appointment
+  function addAppointment(e) {
+    if (e) e.preventDefault(); // stop form reload if inside <form>
+
+    const nameInput = document.getElementById("name");
+    const timeInput = document.getElementById("time");
+
+    const name = nameInput.value.trim();
+    const time = timeInput.value.trim();
+
+    if (name && time) {
+      savedData.appointments.push({ name, time });
+      localStorage.setItem("appointmentsData", JSON.stringify(savedData));
+      renderAppointments();
+      document.getElementById("appointmentForm").reset();
+    } else {
+      alert("Please enter both a name and a time.");
+    }
+  }
+
+  // Run when page loads
+  document.addEventListener("DOMContentLoaded", () => {
+    renderAppointments();
+    const form = document.getElementById("appointmentForm");
+    if (form) {
+      form.addEventListener("submit", addAppointment);
+    }
+  });
+</script>
